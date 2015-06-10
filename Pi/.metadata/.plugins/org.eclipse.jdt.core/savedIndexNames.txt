@@ -1,0 +1,1 @@
+INDEX VERSION 1.127+D:\Dokumente\Uni Dresden\8. Semester\Eingebettete Systeme\Projekt\ees15\Pi\.metadata\.plugins\org.eclipse.jdt.core
