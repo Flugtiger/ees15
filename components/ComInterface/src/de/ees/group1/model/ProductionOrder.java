@@ -27,6 +27,8 @@ public class ProductionOrder {
 	public int getId() {
 		return _id;
 	}
+	
+	public void 
 
 	public void setId(int id) {
 		if(id < 1 || id > 99)
