@@ -28,7 +28,10 @@ public class ProductionOrder {
 		return _id;
 	}
 	
-	public void 
+	public void insertProductionStep(ProductionStep step){
+		int i=step.getStepNumber();
+		_steps.add(i, step);
+	}
 
 	public void setId(int id) {
 		if(id < 1 || id > 99)
