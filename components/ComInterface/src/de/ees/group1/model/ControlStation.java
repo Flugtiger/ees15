@@ -1,7 +1,11 @@
 package de.ees.group1.model;
 
 import java.util.List;
-
+/**
+ * This class represents the controlstation. Containing a structured list, which contains all orders in the raight order
+ * @author Christoph
+ *
+ */
 public class ControlStation {
 	/**
 	 * structured list containing all orders
