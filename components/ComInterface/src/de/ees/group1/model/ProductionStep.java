@@ -27,7 +27,19 @@ public class ProductionStep {
 	 * The time this step will consume
 	 */
 	private int _workTimeSeconds;
-
+	/**
+	 * The position of the step in the final order
+	 */
+	private int _stepNumber;
+	
+	public int getStepNumber(){
+		return _stepNumber;
+	}
+	
+	public void setStepNumber(int _stepNumber){
+		this._stepNumber=_stepNumber;
+	}
+	
 	public WorkStation.Type getType() {
 		return _type;
 	}
