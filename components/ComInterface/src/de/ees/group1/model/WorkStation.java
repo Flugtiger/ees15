@@ -1,5 +1,6 @@
 package de.ees.group1.model;
 
+import de.ees.group1.model.ProductionStep;
 public class WorkStation {
 	
 	public enum Type {
@@ -11,6 +12,7 @@ public class WorkStation {
 	 */
 	private int status;
 	private int maxQualityLevel;
+	private ProductionStep currentStep;
 	
 	public int getMaxQualityLevel(){
 		return maxQualityLevel;
@@ -28,6 +30,13 @@ public class WorkStation {
 		this.status=status;
 	}
 	
+	public ProductionStep getStep(){
+		return currentStep;
+	}
+	
+	public void setStep(ProductionStep step){
+		currentStep=step;
+	}
 	public boolean work(ProductionStep step) {
 		int time=step.getWorkTimeSeconds();
 		time=time*1000;
