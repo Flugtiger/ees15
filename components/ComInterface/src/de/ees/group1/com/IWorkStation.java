@@ -7,5 +7,10 @@ public interface IWorkStation {
 	 * weiterfahren muss, ihr muss die aktuelle Arbeitsstation mitgeteilt werden
 	 */
 	void enterWorkstation(ProductionStep currentStep);
+	
+	/*
+	 * Simuliert den Arbeitsschritt wenn ihr True übermittelt wurde, sollte aufgerufen werden, wenn das Fahrzeug an der Arbeitsstation steht.
+	 * Gibt True zurück wenn Arbeit korrekt ausgeführt wurde.
+	 */
 	void simulateWork(Boolean k);
 }

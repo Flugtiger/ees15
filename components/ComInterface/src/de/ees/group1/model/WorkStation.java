@@ -1,5 +1,6 @@
 package de.ees.group1.model;
 
+import de.ees.group1.bt.BT_manager;
 import de.ees.group1.cont.Workstation_Control;
 import de.ees.group1.model.ProductionStep;
 public class WorkStation {
@@ -16,6 +17,7 @@ public class WorkStation {
 	private ProductionStep currentStep;
 	private Workstation_Control  control;
 	private WorkStationType type;
+	
 	
 	/*
 	 * Erzeugt eine neue Arbeitsstation, die die entsprechende Control-Klasse für sich erzeugt

@@ -1,22 +1,26 @@
 package de.ees.group1.cont;
 
 
+import de.ees.group1.bt.BT_manager;
 import de.ees.group1.model.ProductionStep;
 import de.ees.group1.model.WorkStation;
 
 public class Workstation_Control {
 	
 	private WorkStation model; 
-
+	
 	
 	public void setModel(WorkStation model){
 		this.model=model;
+		
 	}
-	
+	/*
+	 * Überprüft, ob die Station geeignet ist um den aktuellen Schritt abzuarbeiten
+	 */
 	public void enterWorkstation(ProductionStep currentStep){
-		int maxQualityWS=getMaxQualityLevel();
-		setStep(currentStep)
-		if ((getStatus()==1) & (maxQualityWS>=currentStep.getMinQualityLevel())){
+		int maxQualityWS=model.getMaxQualityLevel();
+		model.setStep(currentStep);
+		if ((model.getStatus()==1) & (maxQualityWS>=currentStep.getMinQualityLevel())){
 			transmitYes();
 		}
 		else{
@@ -27,7 +31,7 @@ public class Workstation_Control {
 	 * Die Methode simuliert den Arbeitsschritt ihr muss ein Boolean übergeben werden, der sagt dass die Arbeit begonnen werden kann 
 	 */
 	public void simulateWork(Boolean k){
-			int time=currentStep.getWorkTimeSeconds();
+			int time=model.getStep().getWorkTimeSeconds();
 			time=time*1000;
 			try {
 				Thread.sleep(time);
@@ -35,13 +39,10 @@ public class Workstation_Control {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if (status==1){
+			if (model.getStatus()==1){
 				transmitYes();
 			}
 			else{
 				transmitNo;
-			
-		
-		
 		}
 }
