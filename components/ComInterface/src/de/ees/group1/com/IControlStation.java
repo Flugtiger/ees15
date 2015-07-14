@@ -5,13 +5,20 @@ import de.ees.group1.model.ProductionStep;
 
 public interface IControlStation {
 	
-	void reachedParkingPositionInd(int orderID ,int nextWorkingStep);
-
+	
+	//Übergibt dem NXT den aktuellen Auftrag
 	ProductionOrder sendProductionOrder();
+	
+	//Übergibt der Leitstation den aktuellen Bearbeitungsschritt
 	void setCurrentStep(ProductionStep step);
+	
+	//Übergibt der GUI den aktuellen Schritt
 	ProductionStep getCurrentStep();
-	boolean waitingPosition(int status);
-	void finishedWorkingStep(int finish);
-	void startWorkingStep(boolean start);
-	void enterWorkingStation(int status);
+	
+	//Übergibt der Leitstation den aktuellen Status des NXT
+	void setStatusNXT(int status);
+	
+	
+	
+	
 }
