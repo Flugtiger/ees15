@@ -3,6 +3,7 @@ package de.ees.group1.cont;
  * Controller for ControlStation, which handles order tracking
  */
 
+import de.ees.group1.bt.BT_manager;
 import de.ees.group1.model.*;
 
 
@@ -15,6 +16,7 @@ public class ControlStation_Control {
 	
 	public  ControlStation_Control(ControlStation model){
 		 this.model=model;
+		 
 	
 	}
 	
@@ -36,9 +38,9 @@ public class ControlStation_Control {
 	/*
 	 * Methode zur Übermittlung eines neuen Auftrags an den NXT. Ist als Methode dem Interafce zu übergeben
 	 */
-	public ProductionOrder sendProductionOrder(){
+	public void sendProductionOrder(){
 		setCurrentOrder();
-		return currentOrder;
+		transmitProductionOrder(currentOrder);
 	}
 
 	/*

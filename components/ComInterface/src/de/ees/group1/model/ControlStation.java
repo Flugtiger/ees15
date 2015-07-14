@@ -1,11 +1,13 @@
 package de.ees.group1.model;
 
+import de.ees.group1.bt.BT_manager;
 import de.ees.group1.cont.ControlStation_Control;
 
 public class ControlStation {
 	private int statusNXT;
 	private OrderList list;
 	private ControlStation_Control control;
+	
 	
 	
 	public ControlStation(){
