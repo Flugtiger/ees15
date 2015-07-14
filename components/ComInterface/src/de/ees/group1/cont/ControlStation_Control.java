@@ -10,59 +10,98 @@ public class ControlStation_Control {
 	private ProductionOrder currentOrder;
 	private ProductionStep currentStep;
 	private int currentStepNumber;
+	private ControlStation model;
+	private WorkStation CurrentWorkStation;
+	
+	public  ControlStation_Control(ControlStation model){
+		 this.model=model;
+	
+	}
 	
 	/*
 	 * übergibt den gerade an den NXT übermittleten Auftrag an die ControlStation
-	 */
+	 */	
 	public void setCurrentOrder(){
-		currentOrder=list.getFirstOrder;
+		currentOrder=model.getList().getFirstOrder();
 		currentStepNumber=0;
 	}
+	
 	/*
-	 * Schreibt den nächsten Step auf currentStep und erhöht die currentStepNumber um 1
+	 * Fügt der Liste mit den ProductionOrder einen neuen Auftrag zu.
 	 */
-	public void setCurrentStep(ProductionStep step){
-		currentStep =step;
-		currentStepNumber ++;
+	public void addProductionOrder(ProductionOrder order){
+		model.getList().setProductionOrder(order);
 	}
 	
-	public ProductionStep getCurrentStep(){
-		return currentStep;
-	}
-	
+	/*
+	 * Methode zur Übermittlung eines neuen Auftrags an den NXT. Ist als Methode dem Interafce zu übergeben
+	 */
 	public ProductionOrder sendProductionOrder(){
+		setCurrentOrder();
 		return currentOrder;
 	}
 
+	/*
+	 * Übergibt den aktuellen Status des NXT an das Model. Ist als Methode dem Interface zu übergeben
+	 */
 	public void setStatusNXT(int statusNXT){
-		setStatusNXT();
-	}
-	//Sollte int sein
-	public void startWorkingStep(boolean start){
-		setStatusNXT(1);
+		model.setStatusNXT(statusNXT);
+	
 	}
 	
-	public void finishedWorkingStep(int finish){
-		setStatusNXT(finish);
+	public int getStatusNXT(){
+		return model.getStatusNXT();
 	}
 	
-	public boolean waitingPosition(int status){
-		setStatusNXT(status);
-		if (status==??){
-			System.out.println("Auftrag beendet!");
-			this.setCurrentOrder();
-			return true;
+	
+	
+	public void evaluateStatusNXT(){
+		int status=model.getStatusNXT();
+		if ((0<status) & (status<=22)){
+			switch (status){
+			case 1: case 5: case 9: case 13: case 17:
+				//setWorkStation(1);
+				break;
+			case 2: case 6: case 10: case 14: case 18:
+				//setWorkStation(2);
+				break;
+			case 3: case 7: case 11: case 15: case 19:
+				//setWorkStation(3);
+				break;
+			case 4: case 8: case 12: case 16: case 20:
+				//setWorkStation(4);
+				break;
+			case 21:
+				//neuen Auftrag anstoßen
+				break;
+			case 22:
+				//Meldung alles kaputt
+				break;
+			}
 		}
-		else{
-			System.out.println("Auftrag fehlgeschlagen, starten Sie das System neu!");
-			return false;
+		if ((0<status) & (status<=20)){
+			switch (status){
+			case 1: case 2: case 3: case 4: 
+				//action to "Einfahrt");
+				break;
+			case 5: case 6: case 7: case 8: 
+				//action to "Weiterfahrt";
+				break;
+			case 9: case 10: case 11: case 12: 
+				//arbeit beginnen;
+				break;
+			case 13: case 14: case 15: case 16: 
+				//Arbeit beendet;
+				break;
+			case 17: case 18: case 19: case 20: 
+				//arbeit konnte nicht durchgeführt werden;
+				break;
+			}
 		}
-	}
-	
-	public void enterWorkingStation(int status){
-		setStatusNXT(status);
 	}
 }
+	
+	
 	
 	
 
