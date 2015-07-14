@@ -15,6 +15,7 @@ public class WorkStation {
 	private int maxQualityLevel;
 	private ProductionStep currentStep;
 	private Workstation_Control  control;
+	private WorkStationType type;
 	
 	/*
 	 * Erzeugt eine neue Arbeitsstation, die die entsprechende Control-Klasse für sich erzeugt
@@ -36,7 +37,9 @@ public class WorkStation {
 		return maxQualityLevel;
 	}
 	
-	
+	/*
+	 * setzt das maximal von der Arbeitsstation zu bewältigende Qualitätsniveau
+	 */
 	public void setMaxQualityLevel(int maxQualityLevel){
 		this.maxQualityLevel=maxQualityLevel;
 	}
@@ -55,30 +58,31 @@ public class WorkStation {
 		this.status=status;
 	}
 	
+	/*
+	 * Gibt den aktuellen Arbeitsschritt zurück
+	 */
 	public ProductionStep getStep(){
 		return currentStep;
 	}
 	
+	/*
+	 * Setzt den aktuellen Arbeitsschritt
+	 */
 	public void setStep(ProductionStep step){
 		currentStep=step;
 	}
-	public boolean work(ProductionStep step) {
-		int time=step.getWorkTimeSeconds();
-		time=time*1000;
-		try {
-			Thread.sleep(time);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if (status==1){
-			return true;
-		}
-		else{
-			return false;
-		}
-		
+	
+	/*
+	 * Setzt den Typ der Arbeitsstation
+	 */
+	public void setType(WorkStationType type){
+		this.type=type;
 	}
 	
-
+	/*
+	 * Gibt den Typ zurück
+	 */
+	public WorkStationType getType(){
+		return type;
+	}
 }
