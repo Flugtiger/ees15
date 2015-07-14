@@ -6,6 +6,13 @@ import de.ees.group1.model.WorkStation;
 
 public class Workstation_Control {
 	
+	private WorkStation model; 
+
+	
+	public void setModel(WorkStation model){
+		this.model=model;
+	}
+	
 	public void enterWorkstation(ProductionStep currentStep){
 		int maxQualityWS=getMaxQualityLevel();
 		setStep(currentStep)
