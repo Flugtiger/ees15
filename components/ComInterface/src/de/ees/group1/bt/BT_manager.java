@@ -1,19 +1,24 @@
 package de.ees.group1.bt;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 import javax.bluetooth.RemoteDevice;
 
 import de.ees.group1.com.IComProvider;
 import de.ees.group1.com.IControlStation;
 import de.ees.group1.com.IWorkStation;
+import de.ees.group1.model.Ack_Telegram;
+import de.ees.group1.model.Order_Telegram;
 import de.ees.group1.model.ProductionOrder;
+import de.ees.group1.model.Telegramm;
 
 public class BT_manager implements IComProvider{
 	
 	private BT_device localDev = null;
 	private RemoteDevice remoteDev = null;
+	private IControlStation controlStation = null;
+	private ArrayList<IWorkStation> workStation = new ArrayList<IWorkStation>();
 	
 	public BT_manager(){
 		
@@ -52,12 +57,6 @@ public class BT_manager implements IComProvider{
 		
 	}
 	
-	public boolean sendData(byte[] data){
-		
-		return this.localDev.sendMessage(data);
-		
-	}
-	
 	public void disconnect(){
 		
 		try{
@@ -75,21 +74,79 @@ public class BT_manager implements IComProvider{
 	
 	public void register(IControlStation cs){
 		
-		
+		this.controlStation = cs;
 		
 	}
 	
 	public void register(IWorkStation ws){
 		
+		this.workStation.add(ws);
 		
+	}
+	
+	public void getMessage(){
+		
+		try{
+			Telegramm tele = this.localDev.receiveMessage();
+		}catch(IOException e){
+			System.out.println(e.getMessage());
+		}
 		
 	}
 	
 	public void transmitProductionOrder(ProductionOrder order){
 
-		Telegramm tele = new Telegramm(16,0,1,order);
+		Telegramm tele = new Order_Telegram(16,0,order);
 		
-		if(this.sendData(this.localDev.toByte(tele))){
+		if(this.localDev.sendMessage(tele)){
+			
+			System.out.println("Datenübertragung erfolgreich");
+			
+		} else{
+			
+			System.out.println("Datenübertragung fehlgeschlagen");
+						
+		}
+		
+	}
+	
+	public void transmitYes(){
+		
+		Telegramm tele = new Ack_Telegram(16,0,true);
+		
+		if(this.localDev.sendMessage(tele)){
+			
+			System.out.println("Datenübertragung erfolgreich");
+			
+		} else{
+			
+			System.out.println("Datenübertragung fehlgeschlagen");
+						
+		}
+		
+	}
+	
+	public void transmitNo(){
+		
+		Telegramm tele = new Ack_Telegram(16,0,false);
+		
+		if(this.localDev.sendMessage(tele)){
+			
+			System.out.println("Datenübertragung erfolgreich");
+			
+		} else{
+			
+			System.out.println("Datenübertragung fehlgeschlagen");
+						
+		}
+		
+	}
+	
+	public void transmitFinishedStep(){
+		
+		Telegramm tele = new Ack_Telegram(16,0,true);
+		
+		if(this.localDev.sendMessage(tele)){
 			
 			System.out.println("Datenübertragung erfolgreich");
 			

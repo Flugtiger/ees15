@@ -1,16 +1,20 @@
 package de.ees.group1.bt;
 
-import java.io.*;
-import java.math.*;
-
-import javax.bluetooth.*;
-import javax.microedition.io.*;
-import javax.obex.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
+import de.ees.group1.model.Ack_Telegram;
+import de.ees.group1.model.Order_Telegram;
+import de.ees.group1.model.ProductionStep;
+import de.ees.group1.model.State_Telegram;
+import de.ees.group1.model.Step_Telegram;
+import de.ees.group1.model.Telegramm;
+import de.ees.group1.model.WorkstationType;
 
 /**
  * 
@@ -43,6 +47,12 @@ public class BT_device /*implements DiscoveryListener*/ {
 		
 	}
 	
+	/**
+	 * Stellt eine Verbindung zu dem Fahrzeug her.
+	 * 
+	 * @return true, wenn Verbindung hergestellt wurde, andernfalls false
+	 * @throws IOException
+	 */
 	public boolean searchRemoteDevice() throws IOException{
 		
 		this.nxtInfo = new NXTInfo(NXTCommFactory.BLUETOOTH, "NXT", this.mac);
@@ -61,7 +71,6 @@ public class BT_device /*implements DiscoveryListener*/ {
 	}
 	
 	/**
-	 * 
 	 * Definiert die zu Suchende MAC-Adresse
 	 * @param mac MAC-Adresse
 	 * 
@@ -72,40 +81,130 @@ public class BT_device /*implements DiscoveryListener*/ {
 		
 	}
 	
+	/**
+	 * Stellt Streams über die Verbindung her.
+	 * @return 
+	 */
 	public boolean startService(){
 		
-		this.dos = nxtComm.getOutputStream();
 		this.dis = nxtComm.getInputStream();
 		
 		return true;
 		
 	}
 	
-	public boolean sendMessage(byte[] message){
-	
-		try {
+	public Telegramm receiveMessage() throws IOException{
+		
+		String message;
+		byte[] data; 
+		int type;
+		int length_1 = 0;
+		int length_2 = 0;
+		int length = 0;
+		
+		length_1 = dis.read()*16*16;
+		length_1 = length_1 + dis.read();
+		data = new byte[length_1];
+		length = dis.read(data);
+		length_2 = dis.read()*16*16;
+		length_2 = length_2 + dis.read();
+		
+		if(length_1 != length_2){
 			
-			//TODO
-			//TODO Längenbytes hnzufügen
-			//TODO
-			this.dos.write(message);
-			this.dos.flush();
-			return true;
+			System.out.println("Telegramm fehlerhaft");
+			return null;
 			
-		} catch (IOException e) {
-			System.out.println(e.getMessage());
-			return false;
 		}
+		
+		type = data[2];
+		
+		switch(type){
+		case 0:
+			if(data[3]== 0){
+				return new Ack_Telegram(data[0], data[1], false);
+			}else{
+				return new Ack_Telegram(data[0], data[1], true);
+			}
+		case 1:
+			System.out.println("Fehlerhaftes Telegramm");
+			return null;
+		case 2:
+			ProductionStep prodStep = new ProductionStep();
+			prodStep.setMinQualityLevel(data[5]);
+			prodStep.setWorkTimeSeconds(data[4]);
+			switch(data[3]){
+			case 0:	prodStep.setType(WorkstationType.NONE);
+			case 1: prodStep.setType(WorkstationType.LATHE);
+			case 2: prodStep.setType(WorkstationType.DRILL);
+			default: prodStep.setType(WorkstationType.NONE);
+			}
+			return new Step_Telegram(data[0], data[1], prodStep);
+		case 3:
+			return new State_Telegram(data[0], data[1], data[2]);
+		default:
+		}
+		
+		message = new String(data);
+		System.out.println("Telegram empfangen: Unbekannter Typ" + message);
+		
+		return null;
 		
 	}
 	
+	/**
+	 * Überträgt ein Telegramm an den NXT.
+	 * @param message Zu übertragende Nachricht.
+	 * @return true, wenn Übertragung erfolgreich.
+	 */
+	public boolean sendMessage(Telegramm message){
+
+		int length = 0;
+		byte[] length_data = new byte[2];
+		
+		String transformed = message.transform();
+		System.out.println(transformed);
+		length = transformed.length();
+		System.out.println(""+length);
+		for(int i = 0; i<2; ++i){
+			int shift = i << 3;
+			length_data[1-i] = (byte)((length & (0xff << shift))>>shift);
+		}
+		
+		byte[] data = message.concat(length_data, message.concat(transformed.getBytes(), length_data));
+		System.out.println(data.toString());
+		System.out.println(new String(data));
+		
+		try{
+			
+			this.dos = nxtComm.getOutputStream();
+			this.dos.write(data);
+			this.dos.flush();
+			this.dos.close();
+			return true;
+			
+		}catch(IOException e){
+			
+			return false;	
+			
+		}
+			
+	}
+	
+	/**
+	 * Beendet die Verbindung mit dem Fahrzeug
+	 * @throws IOException
+	 */
 	public void close() throws IOException{
 		
 		this.dis.close();
-		this.dos.close();
 		
 	}
-		
+	
+	/**
+	 * Wandelt ein Byte-Array in einen Hex-String um
+	 * @param data Byte-Array
+	 * @return Hex-String
+	 */
 	public String byteToHex(byte[] data){
 		
 		StringBuffer sb = new StringBuffer();
@@ -120,35 +219,5 @@ public class BT_device /*implements DiscoveryListener*/ {
 		return sb.toString();
 		
 	}
-	
-	public byte[] toByte(Telegramm tele){
 		
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		ObjectOutput out = null;
-		
-		try {
-			out = new ObjectOutputStream(bos);
-			out.writeObject(tele);
-			return bos.toByteArray();
-		}catch(IOException e){
-			e.printStackTrace();
-		}finally {
-			try{
-				if( out != null ){
-					out.close();
-				}
-			} catch (IOException e) {
-				System.out.println(e.getMessage());
-			}
-			try{
-				bos.close();
-			}catch(IOException e) {
-				System.out.println(e.getMessage());	
-			}
-		
-		}
-		return null;
-		
-	}
-	
 }
