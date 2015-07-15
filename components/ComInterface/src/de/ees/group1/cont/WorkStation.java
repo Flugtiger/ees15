@@ -1,7 +1,6 @@
 package de.ees.group1.cont;
 
 import de.ees.group1.bt.BT_manager;import de.ees.group1.com.IWorkStation;
-import de.ees.group1.cont.Workstation_Control;
 import de.ees.group1.model.ProductionStep;
 import de.ees.group1.model.WorkstationType;
 public class WorkStation implements IWorkStation{
@@ -16,10 +15,10 @@ public class WorkStation implements IWorkStation{
 	private int status;
 	private int maxQualityLevel;
 	private ProductionStep currentStep;
-	
 	private WorkstationType type;
 	private BT_manager btManager;
 	private IWorkStation ws;
+	
 	
 	/*
 	 * Erzeugt eine neue Arbeitsstation, die die entsprechende Control-Klasse für sich erzeugt
@@ -32,10 +31,7 @@ public class WorkStation implements IWorkStation{
 		setMaxQualityLevel(1);
 		setStatus(-1);
 	}
-	// Übergibt der Control-Klasse das aktuelle Modell
-	public void setModel(){
-		control.setModel(this);
-	}
+	
 	//Gibt die maximale Qualität der Arbeitsstation zurück
 	public int getMaxQualityLevel(){
 		return maxQualityLevel;
@@ -79,42 +75,23 @@ public class WorkStation implements IWorkStation{
 	/*
 	 * Setzt den Typ der Arbeitsstation
 	 */
-	public void setType(WorkStationType type){
+	public void setType(WorkstationType type){
 		this.type=type;
 	}
 	
 	/*
 	 * Gibt den Typ zurück
 	 */
-	public WorkStationType getType(){
+	public WorkstationType getType(){
 		return type;
 	}
-}
 
 	
-	
-	public void setModel(WorkStation model){
-		this.model=model;
-		
-	}
-	/*
-	 * Überprüft, ob die Station geeignet ist um den aktuellen Schritt abzuarbeiten
-	 */
-	public void enterWorkstation(ProductionStep currentStep){
-		int maxQualityWS=model.getMaxQualityLevel();
-		model.setStep(currentStep);
-		if ((model.getStatus()==1) & (maxQualityWS>=currentStep.getMinQualityLevel())){
-			transmitYes();
-		}
-		else{
-			transmitNo;
-		}
-	}
 	/*
 	 * Die Methode simuliert den Arbeitsschritt ihr muss ein Boolean übergeben werden, der sagt dass die Arbeit begonnen werden kann 
 	 */
-	public void simulateWork(Boolean k){
-			int time=model.getStep().getWorkTimeSeconds();
+	public void simulateWork(){
+			int time=getStep().getWorkTimeSeconds();
 			time=time*1000;
 			try {
 				Thread.sleep(time);
@@ -122,10 +99,30 @@ public class WorkStation implements IWorkStation{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if (model.getStatus()==1){
-				transmitYes();
+			if (getStatus()==1){
+				btManager.transmitFinishedStep(true);
 			}
 			else{
-				transmitNo;
+				btManager.transmitFinishedStep(false);
 		}
+}
+
+	
+	public void giveCurrentStep(ProductionStep step) {
+		int maxQualityWS=getMaxQualityLevel();
+		currentStep=step;
+		if ((status==1) & (maxQualityWS>=currentStep.getMinQualityLevel())){
+			btManager.transmitYes();
+		}
+		else{
+			btManager.transmitNo();
+		}
+		
+	}
+
+	//NXT hat Arbeitsposition und wartet auf abarbeitung des aktuellen Auftrags
+	public void giveAcknowledgement(boolean answer) {
+		simulateWork();
+		
+	}
 }

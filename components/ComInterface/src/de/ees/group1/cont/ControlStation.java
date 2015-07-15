@@ -12,8 +12,6 @@ public class ControlStation implements IControlStation{
 	private ProductionOrder currentOrder;
 	private ProductionStep currentStep;
 	private int currentStepNumber;
-	private ControlStation model;
-	private WorkStation CurrentWorkStation;
 	private OrderList list;
 	private int statusNXT;
 	private BT_manager btManager;
@@ -45,21 +43,7 @@ public class ControlStation implements IControlStation{
 		list.setProductionOrder(order);
 	}
 	
-	/*
-	 * Methode zur Übermittlung eines neuen Auftrags an den NXT. Ist als Methode dem Interafce zu übergeben
-	 */
-	public void sendProductionOrder(){
-		setCurrentOrder();
-		btManager.transmitProductionOrder(currentOrder);
-	}
 
-	/*
-	 * Übergibt den aktuellen Status des NXT an das Model. Ist als Methode dem Interface zu übergeben
-	 */
-	public void setStatusNXT(int statusNXT){
-		this.statusNXT=statusNXT;
-	
-	}
 	
 	public int getStatusNXT(){
 		return statusNXT;
@@ -120,6 +104,25 @@ public class ControlStation implements IControlStation{
 	
 	public ProductionStep getCurrentStep() {
 		return currentStep;
+	}
+
+	
+	public void reachedParkingPosistionInd(int nextWorkingStep) {
+		if ((nextWorkingStep==currentStepNumber)&(currentOrder.size()>=nextWorkingStep)){
+			currentOrder=list.getFirstOrder();
+			btManager.transmitProductionOrder(currentOrder);
+		}
+		
+	}
+
+	//Auftrag erfolgreich übermittelt
+	public void giveAcknowledgement(boolean answer) {
+		// TODO Auto-generated method stub
+	}
+
+	//Überträgt den aktuellen Status des NXT an die Leitstation
+	public void transmitActualState(int state) {
+			statusNXT=state;
 	}
 }
 	

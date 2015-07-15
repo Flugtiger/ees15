@@ -21,6 +21,7 @@ public class OrderList extends LinkedList<ProductionOrder>{
 	}
 	
 	public ProductionOrder getFirstOrder(){
+		remove();
 		return this.getFirst();
 	}
 }
