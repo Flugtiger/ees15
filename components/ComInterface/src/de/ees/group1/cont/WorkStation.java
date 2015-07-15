@@ -1,9 +1,10 @@
-package de.ees.group1.model;
+package de.ees.group1.cont;
 
-import de.ees.group1.bt.BT_manager;
+import de.ees.group1.bt.BT_manager;import de.ees.group1.com.IWorkStation;
 import de.ees.group1.cont.Workstation_Control;
 import de.ees.group1.model.ProductionStep;
-public class WorkStation {
+import de.ees.group1.model.WorkstationType;
+public class WorkStation implements IWorkStation{
 	
 	
 	
@@ -15,18 +16,19 @@ public class WorkStation {
 	private int status;
 	private int maxQualityLevel;
 	private ProductionStep currentStep;
-	private Workstation_Control  control;
-	private WorkStationType type;
 	
+	private WorkstationType type;
+	private BT_manager btManager;
+	private IWorkStation ws;
 	
 	/*
 	 * Erzeugt eine neue Arbeitsstation, die die entsprechende Control-Klasse für sich erzeugt
 	 * und sich der Control-Klasse bekannt macht.
 	 * Setzt default Werte für die Parameter der Arbeitsstation
 	 */
-	public WorkStation(){
-		control= new Workstation_Control();
-		setModel();
+	public WorkStation(BT_manager btManager){
+		this.btManager=btManager;
+		this.btManager.register(ws);
 		setMaxQualityLevel(1);
 		setStatus(-1);
 	}
@@ -87,4 +89,43 @@ public class WorkStation {
 	public WorkStationType getType(){
 		return type;
 	}
+}
+
+	
+	
+	public void setModel(WorkStation model){
+		this.model=model;
+		
+	}
+	/*
+	 * Überprüft, ob die Station geeignet ist um den aktuellen Schritt abzuarbeiten
+	 */
+	public void enterWorkstation(ProductionStep currentStep){
+		int maxQualityWS=model.getMaxQualityLevel();
+		model.setStep(currentStep);
+		if ((model.getStatus()==1) & (maxQualityWS>=currentStep.getMinQualityLevel())){
+			transmitYes();
+		}
+		else{
+			transmitNo;
+		}
+	}
+	/*
+	 * Die Methode simuliert den Arbeitsschritt ihr muss ein Boolean übergeben werden, der sagt dass die Arbeit begonnen werden kann 
+	 */
+	public void simulateWork(Boolean k){
+			int time=model.getStep().getWorkTimeSeconds();
+			time=time*1000;
+			try {
+				Thread.sleep(time);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if (model.getStatus()==1){
+				transmitYes();
+			}
+			else{
+				transmitNo;
+		}
 }

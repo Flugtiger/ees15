@@ -7,7 +7,7 @@ public interface IControlStation {
 	
 	
 	//Übergibt dem NXT den aktuellen Auftrag
-	ProductionOrder sendProductionOrder();
+	void sendProductionOrder();
 	
 	//Übergibt der Leitstation den aktuellen Bearbeitungsschritt
 	void setCurrentStep(ProductionStep step);
