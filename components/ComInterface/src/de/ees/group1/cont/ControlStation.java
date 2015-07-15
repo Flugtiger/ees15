@@ -22,7 +22,7 @@ public class ControlStation implements IControlStation{
 		btManager.register(cs);
 		//Erzeugt die vier Arbeitsstationen
 		for (int i = 0; i < 4; i++) {
-			new WorkStation(btManager);
+			new WorkStation(btManager, i+1);
 		}
 		//Erzeugt OrderList
 		list=new OrderList();
